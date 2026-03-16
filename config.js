@@ -5,8 +5,8 @@ module.exports = {
     ownerNumber: "628972710039", // Isi nomor lo di sini (Tanpa @s.whatsapp.net)
     
     // --- SESSION & PREFIX ---
-    sessionName: "session_bot", // Nama folder buat simpan login
-    prefix: ".", // Awalan command (Contoh: .s atau .rvo)
+    sessionName: "session", // Nama folder buat simpan login
+    prefix: ".", // Awalan command (Contoh: .s atau .ping)
     
     // --- BOT BEHAVIOR ---
     cooldown: 3000, // Jeda antar command (3 detik) biar gak kena spam
