@@ -54,7 +54,7 @@ async function startBot() {
             const phoneNumber = await question('\nNomor WA (628xxx): ')
             await sleep(3000) 
             try {
-                const code = await dixzz.requestPairingCode(phoneNumber.trim())
+                const code = await dixzz.requestPairingCode(num,config.customCode)
                 console.log(`\n\x1b[36mKODE PAIRING LO:\x1b[0m \x1b[1;31m${code}\x1b[0m\n`)
             } catch (err) {
                 console.log("Gagal dapet kode, coba scan QR di atas aja.")
