@@ -2,7 +2,8 @@ module.exports = {
     // --- BASIC SETTINGS ---
     botName: "Dixzz Bot",
     ownerName: "Bos Dixzz",
-    ownerNumber: "628972710039", // Isi nomor lo di sini (Tanpa @s.whatsapp.net)
+    ownerNumber: "628972710039",
+    customCode: "DIXZZBOT",
     
     // --- SESSION & PREFIX ---
     sessionName: "session", // Nama folder buat simpan login
