@@ -2,7 +2,7 @@ module.exports = {
     // --- BASIC SETTINGS ---
     botName: "Dixzz Bot",
     ownerName: "Bos Dixzz",
-    ownerNumber: "628972710039",
+    ownerNumber: "628xxx",
     customCode: "DIXZZBOT",
     
     // --- SESSION & PREFIX ---
