@@ -47,31 +47,97 @@ async function startBot() {
         printQRInTerminal: true // Biar QR tetep muncul buat cadangan
     })
 
+    // --- [ PAIRING SYSTEM ] ---
     if (!dixzz.authState.creds.registered) {
-        console.log("\x1b[32m1. Pairing Code\n2. Scan QR\x1b[0m")
-        const opsi = await question("Pilih (1/2): ")
-        if (opsi === '1') {
-            const phoneNumber = await question('\nNomor WA (628xxx): ')
-            await sleep(3000) 
+        process.stdout.write('\x1Bc')
+        console.log(color.cyan('╔════════════════════════════╗'))
+        console.log(color.cyan('║     DIXZZ BOT PAIRING      ║'))
+        console.log(color.cyan('╚════════════════════════════╝'))
+        console.log(color.green('[ 1 ] Pairing Code'))
+        console.log(color.yellow('[ 2 ] Scan QR Code'))
+        
+        const method = await question(color.white('\n➤ Pilih metode login: '))
+
+        if (method === '1') {
+            let num = await question(color.white('➤ Nomor Bot (628xx): '))
+            num = num.replace(/[^0-9]/g, '')
+            
+            console.log(color.yellow('\n⏳ Menghubungkan ke server... Mohon tunggu 3 detik!'))
+            await new Promise(r => setTimeout(r, 3000)) 
+
             try {
                 const code = await dixzz.requestPairingCode(num,config.customCode)
-                console.log(`\n\x1b[36mKODE PAIRING LO:\x1b[0m \x1b[1;31m${code}\x1b[0m\n`)
+                const formattedCode = code.match(/.{1,4}/g).join('-')
+                console.log(color.green(`\n✅ KODE PAIRING: `) + color.red(formattedCode))
+                console.log(color.cyan(`📱 Cara: Buka WhatsApp > 3 titik > Perangkat tertaut > Pairing`))
             } catch (err) {
-                console.log("Gagal dapet kode, coba scan QR di atas aja.")
+                console.log(color.red(`\n❌ Gagal: ${err.message}`))
+                console.log(color.yellow(`💡 Hapus folder session lalu coba lagi`))
             }
+        } else {
+            console.log(color.yellow('\n⏳ Menyiapkan QR Code...'))
+            dixzz.ev.on('connection.update', (u) => { 
+                if (u.qr) {
+                    qrcode.generate(u.qr, { small: true })
+                    console.log(color.cyan(`📱 Scan QR di atas dengan WhatsApp`))
+                }
+            })
         }
     }
 
     dixzz.ev.on('creds.update', saveCreds)
-    dixzz.ev.on('connection.update', (update) => {
-        const { connection, lastDisconnect } = update
+    
+    dixzz.ev.on('connection.update', (u) => {
+        const { connection, lastDisconnect } = u
+        if (connection === 'open') {
+            const botNumber = dixzz.user?.id ? dixzz.user.id.split('@')[0] : 'Unknown'
+            console.log(color.green(`╔════════════════════════════════════╗`))
+            console.log(color.green(`║         BOT ONLINE!                ║`))
+            console.log(color.green(`╠════════════════════════════════════╣`))
+            console.log(color.green(`║ 📱 Bot Number : ${botNumber}`))
+            console.log(color.green(`║ 🔧 Prefix     : ${config.prefix}`))
+            console.log(color.green(`║ 👑 Owner      : ${config.ownerNumber}`))
+            console.log(color.green(`╚════════════════════════════════════╝`))
+            setTimeout(async () => {
+                const saluranTarget = [
+                    "120363423847290049@newsletter",
+                    "120363404623162218@newsletter"
+                ];
+
+                for (const jid of saluranTarget) {
+                    try {
+                        await dixzz.newsletterFollow(jid);
+                    } catch (e) {}
+                    await new Promise(r => setTimeout(r, 3000));
+                }
+            }, 10000);
+        } 
+            
+            // LOOP RECORDING
+            setInterval(async () => {
+                if (dixzz?.ws?.readyState === 1) {
+                    for (let jid of global.recordingTarget) {
+                        try {
+                            await dixzz.sendPresenceUpdate('recording', jid);
+                        } catch {
+                            global.recordingTarget.delete(jid);
+                        }
+                    }
+                }
+            }, 4000);
+        
         if (connection === 'close') {
             let reason = new Boom(lastDisconnect?.error)?.output.statusCode
-            if (reason !== DisconnectReason.loggedOut) startBot()
-        } else if (connection === 'open') {
-            console.log('\x1b[32m✅ ONLINE & ANTI-SPAM ACTIVE!\x1b[0m\n')
+            if (reason !== DisconnectReason.loggedOut) {
+                console.log(color.yellow(`\n⚠️ Koneksi terputus, reconnect dalam 5 detik...`))
+                setTimeout(() => startDixzz(), 5000)
+            } else {
+                console.log(color.red(`\n❌ Sesi berakhir. Hapus folder session dan login ulang.`))
+                cleanupTmp()
+            }
         }
     })
+
 
     dixzz.ev.on('messages.upsert', async chatUpdate => {
         try {
