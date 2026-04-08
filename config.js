@@ -1,16 +1,11 @@
 module.exports = {
-    // --- BASIC SETTINGS ---
-    botName: "Dixzz Bot",
-    ownerName: "Bos Dixzz",
+    botName: "DixzzXD",
+    ownerName: "Dixzz",
     ownerNumber: "628xxx",
     customCode: "DIXZZBOT",
-    
-    // --- SESSION & PREFIX ---
-    sessionName: "session", // Nama folder buat simpan login
-    prefix: ".", // Awalan command (Contoh: .s atau .ping)
-    
-    // --- BOT BEHAVIOR ---
-    cooldown: 3000, // Jeda antar command (3 detik) biar gak kena spam
+    sessionName: "session",
+    prefix: ".",
+    cooldown: 3000,
     
     // --- MESSAGES ---
     msg: {
